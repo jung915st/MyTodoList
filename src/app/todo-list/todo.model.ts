@@ -6,7 +6,7 @@ export class Todo {
   private completed = false;
 
   constructor(title: string) {
-    this.title = title || ';'
+    this.title = title || '';
   }
 
 /**
@@ -68,6 +68,10 @@ set editable(bl: boolean) {
 */
 setTitle(title: string): void {
   this.title = title;
+}
+
+setCompleted(completed: boolean): void {
+  this.completed = completed;
 }
 
 

@@ -48,6 +48,10 @@ export class TodoListService {
    return this.list.filter(todo => todo.done === completed);
  }
 
+ removeCompleted(): void {
+  this.list = this.getWithCompleted(false);
+}
+
 
 
 }

@@ -4,7 +4,7 @@ import { TodoListService } from './todo-list.service';
 
 import { Todo } from './todo.model';
 
-import { TodoStatusType } from './todo-status-type';
+import { TodoStatusType } from './todo-status-type.enum';
 
 @Component({
   selector: 'app-todo-list',
@@ -13,10 +13,6 @@ import { TodoStatusType } from './todo-status-type';
 })
 export class TodoListComponent implements OnInit {
 
-  constructor(private todoListService: TodoListService) { }
-
-  ngOnInit() {
-  }
 
   /**
   * item status
@@ -32,24 +28,43 @@ export class TodoListComponent implements OnInit {
   */
  private status = TodoStatusType.All;
 
-  addTodo(event: KeyboardEvent): void {
+ constructor(private todoListService: TodoListService) { }
 
-    const todostuff = event.target as HTMLInputElement;
+ ngOnInit() {
+ }
 
-    if (!todostuff) {
+  addTodo(event:KeyboardEvent): void {
+
+    const todos = event.target as HTMLInputElement;
+
+    if (!todos) {
       return;
     }
-
-    const todo = todostuff.value.trim();
     if (event.key === 'Enter') {
+      const todo = todos.value.trim();
       this.todoListService.add(todo);
-      todostuff.value = '';
+      todos.value = '';
     }
-
   }
 
   getList(): Todo[] {
-    return this.todoListService.getList();
+    let list: Todo[] = [];
+    switch (this.status) {
+
+      case TodoStatusType.Active:
+        list = this.getRemainingList();
+        break;
+
+      case TodoStatusType.Completed:
+        list = this.getCompletedList();
+        break;
+
+      default:
+        list = this.todoListService.getList();
+        break;
+
+    }
+    return list;
   }
 
   remove(index: number): void {
@@ -113,6 +128,37 @@ export class TodoListComponent implements OnInit {
    return this.todoListService.getWithCompleted(false);
 }
 
+getCompletedList(): Todo[] {
+  return this.todoListService.getWithCompleted(true);
+}
+
+setStatus(status: number): void {
+  this.status = status;
+}
+
+checkStatus(status: number): boolean {
+  return this.status === status;
+}
+
+removeCompleted(): void {
+  this.todoListService.removeCompleted();
+}
+
+getAllList(): Todo[] {
+  return this.todoListService.getList();
+}
+
+allCompleted(): boolean {
+  return this.getAllList().length === this.getCompletedList().length;
+}
+
+setAllTo(completed: boolean): void {
+
+  this.getAllList().forEach((todo) => {
+    todo.setCompleted(completed);
+  });
+
+}
 
 }
 
